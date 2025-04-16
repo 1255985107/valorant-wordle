@@ -3,8 +3,7 @@ import json
 
 def get_player_info(player_id):
     # VLR Esports API endpoint
-    api_url = f"https://statsvlr.nostep.xyz/api/v1/players/{player_id}"
-    # api_url = f"http://localhost:5000/api/v1/players/{player_id}"
+    api_url = f"http://localhost:5000/api/v1/players/{player_id}"
     
     # 设置请求头
     headers = {
@@ -54,8 +53,8 @@ if __name__ == "__main__":
     
     if result:
         # 将结果保存到 JSON 文件
-        with open(f"vlr_{player_id}.txt.json", "w", encoding="utf-8") as f:
+        with open(f"player_{player_id}.txt.json", "w", encoding="utf-8") as f:
             json.dump(result, f, ensure_ascii=False, indent=4)
-        print(f"Results saved to vlr_{player_id}.json")
+        print(f"Results saved to player_{player_id}.json")
     else:
         print("Player not found or error occurred")

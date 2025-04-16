@@ -15,7 +15,8 @@ def get_event_players(event_id):
     # 设置查询参数
     params = {
         'event': event_id,
-        'limit': 'all'  # 获取所有选手
+        'limit': 'all',
+        'minrounds': '1' # 比赛中场次较少，降低 min rounds
     }
     
     try:
@@ -31,7 +32,10 @@ def get_event_players(event_id):
         player_ids = []
         if 'data' in data:
             for player in data['data']:
-                player_ids.append(player['id'])
+                player_ids.append({
+                    "id": player['id'],
+                    "name": player['name'],
+                })
         
         # 构建输出数据结构
         output_data = {
