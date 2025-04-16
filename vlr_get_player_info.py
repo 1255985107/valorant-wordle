@@ -3,8 +3,8 @@ import json
 
 def get_player_info(player_id):
     # VLR Esports API endpoint
-    # api_url = f"https://statsvlr.nostep.xyz/api/v1/players/{player_id}"
-    api_url = f"http://localhost:5000/api/v1/players/{player_id}"
+    api_url = f"https://statsvlr.nostep.xyz/api/v1/players/{player_id}"
+    # api_url = f"http://localhost:5000/api/v1/players/{player_id}"
     
     # 设置请求头
     headers = {
@@ -39,7 +39,7 @@ def get_player_info(player_id):
                 'logo': player_data.get('team', {}).get('logo'),
                 'joined': player_data.get('team', {}).get('joined')
             },
-            'agents': player_data.get('agents', [])
+            'agents': player_data.get('agents', [])[:4]
         }
         
     except requests.exceptions.RequestException as e:
@@ -48,8 +48,8 @@ def get_player_info(player_id):
 
 # 使用示例
 if __name__ == "__main__":
-    player_id = "10816"  # 示例选手ID
-    player_id = input("Enter the player ID: ")
+    import sys
+    player_id = sys.argv[1]  # 示例选手ID
     result = get_player_info(player_id)
     
     if result:

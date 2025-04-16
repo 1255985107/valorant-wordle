@@ -4,7 +4,8 @@ from datetime import datetime
 
 def get_all_players():
     # API endpoint
-    api_url = f"http://localhost:5000/api/v1/players?limit=100&timespan=all"
+    api_url = f"https://statsvlr.nostep.xyz/api/v1/players?limit=100&timespan=all"
+    # api_url = f"http://localhost:5000/api/v1/players?limit=100&timespan=all"
     
     # 设置请求头
     headers = {
