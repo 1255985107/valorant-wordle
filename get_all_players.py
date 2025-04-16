@@ -2,20 +2,26 @@ import requests
 import json
 from datetime import datetime
 
-def get_all_players():
+def get_all_players(page=1):
     # API endpoint
-    api_url = f"https://statsvlr.nostep.xyz/api/v1/players?limit=100&timespan=all"
-    # api_url = f"http://localhost:5000/api/v1/players?limit=100&timespan=all"
+    api_url = f"https://statsvlr.nostep.xyz/api/v1/players"
+    # api_url = f"http://localhost:5000/api/v1/players"
     
     # 设置请求头
     headers = {
         'User-Agent': 'ValorantPlayerLookup/1.0',
         'Accept': 'application/json'
     }
+
+    params = {
+        'page': page,
+        'limit': '100',
+        'timespan': 'all'
+    }
     
     try:
         # 发送 GET 请求
-        response = requests.get(api_url, headers=headers)
+        response = requests.get(api_url, headers=headers, params=params)
         response.raise_for_status()
         
         # 解析响应数据

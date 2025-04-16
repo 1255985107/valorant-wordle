@@ -5,17 +5,23 @@ import time  # 添加此行
 
 def get_champions_events(page=1):
     # API endpoint
-    api_url = f"https://statsvlr.nostep.xyz/api/v1/events?page={page}&status=completed&region=all"
+    api_url = f"https://statsvlr.nostep.xyz/api/v1/events"
     
     # 设置请求头
     headers = {
         'User-Agent': 'ValorantEventLookup/1.0',
         'Accept': 'application/json'
     }
+
+    params = {
+        'page': page,
+        'region': 'all',
+        'status': 'completed'
+    }
     
     try:
         # 发送 GET 请求
-        response = requests.get(api_url, headers=headers)
+        response = requests.get(api_url, headers=headers, params=params)
         response.raise_for_status()
         time.sleep(0.5)  # 添加1秒延时
         return response.json()
