@@ -58,7 +58,7 @@ if __name__ == "__main__":
     
     if result:
         # 将结果保存到 JSON 文件
-        with open(f"vlr_{player_id}.json", "w", encoding="utf-8") as f:
+        with open(f"vlr_{player_id}.txt.json", "w", encoding="utf-8") as f:
             json.dump(result, f, ensure_ascii=False, indent=4)
         print(f"Results saved to vlr_{player_id}.json")
     else:

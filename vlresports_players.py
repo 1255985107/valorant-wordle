@@ -36,7 +36,7 @@ if __name__ == "__main__":
     if players:
         # 生成带时间戳的文件名
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"players_{timestamp}.json"
+        filename = f"players_{timestamp}.txt.json"
         
         # 将结果保存到 JSON 文件
         with open(filename, "w", encoding="utf-8") as f:
