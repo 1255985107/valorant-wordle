@@ -24,12 +24,6 @@ def get_player_info(player_id):
             
         player_data = data['data']
         return {
-            'id': player_data.get('info').get('id'), # VLR Esports ID
-            'user': player_data.get('info').get('user'), # In game ID
-            'name': player_data.get('info').get('name'), # Real name
-            'team': player_data.get('team').get('id'),
-            'nationality': player_data.get('info').get('country'),
-            'agents': player_data.get('agents', [])[:4],
             'info': {
                 'id': player_data.get('info', {}).get('id'),
                 'user': player_data.get('info', {}).get('user'),
@@ -74,20 +68,11 @@ def get_player_ext(player_id):
             
         player_data = data['data']
         return {
-            'info': {
-                'id': player_data.get('info', {}).get('id'),
-                'user': player_data.get('info', {}).get('user'),
-                'name': player_data.get('info', {}).get('name'),
-                'country': player_data.get('info', {}).get('country'),
-                'flag': player_data.get('info', {}).get('flag'),
-                'img': player_data.get('info', {}).get('img')
-            },
-            'team': {
-                'id': player_data.get('team', {}).get('id'),
-                'name': player_data.get('team', {}).get('name'),
-                'logo': player_data.get('team', {}).get('logo'),
-                'joined': player_data.get('team', {}).get('joined')
-            },
+            'id': player_data.get('info').get('id'), # Player VLR ID
+            'user': player_data.get('info').get('user'), # In game ID
+            'name': player_data.get('info').get('name'), # Real name
+            'team': player_data.get('team').get('id'), # Team VLR ID
+            'nationality': player_data.get('info').get('country'),
             'agents': player_data.get('agents', [])[:4]
         }
         
