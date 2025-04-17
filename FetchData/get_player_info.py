@@ -71,7 +71,7 @@ def get_player_ext(player_id):
             'id': player_data.get('info').get('id'), # Player VLR ID
             'user': player_data.get('info').get('user'), # In game ID
             'name': player_data.get('info').get('name'), # Real name
-            'team': player_data.get('team').get('id'), # Team VLR ID
+            'team': player_data.get('team').get('name'), # Team VLR name
             'nationality': player_data.get('info').get('country'),
             'agents': [agent.get('agentName') for agent in player_data.get('agents', [])[:4]]
         }
@@ -84,7 +84,11 @@ def get_player_ext(player_id):
 if __name__ == "__main__":
     import sys
     player_id = sys.argv[1]  # 示例选手ID
-    result = get_player_ext(player_id)
+    mode = sys.argv[2]
+    if mode == "full":
+        result = get_player_info(player_id)
+    else:
+        result = get_player_ext(player_id)
     
     if result:
         # 将结果保存到 JSON 文件
