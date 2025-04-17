@@ -40,7 +40,6 @@ def get_event_players(event_id):
         
         # 构建输出数据结构
         output_data = {
-            "status": "OK",
             "event_id": event_id,
             "size": len(player_ids),
             "player_ids": player_ids
@@ -64,23 +63,25 @@ def process_all_events():
         
         # 处理每个比赛
         total_events = len(events_data['data'])
+        with open("champions_part.txt.json", "w+", encoding="utf-8") as f:
+            f.write("[")
         for index, event in enumerate(events_data['data'], 1):
             event_id = event['id']
             event_name = event['name']
             print(f"\n处理比赛 {event_id} ({index}/{total_events}): {event_name}")
-            
-            # 获取该比赛的选手数据
+
             result = get_event_players(event_id)
             if result:
                 print(f"成功获取 {result['size']} 名选手数据")
                 with open("champions_part.txt.json", "a", encoding="utf-8") as f:
                     json.dump(result, f, ensure_ascii=False, indent=4)
+                    if index < total_events:
+                        f.write(",")
             else:
                 print(f"获取选手数据失败")
-            
-            # 在请求之间添加延时，避免API限制
             time.sleep(1)
-            
+        with open("champions_part.txt.json", "a", encoding="utf-8") as f:
+            f.write("]")
     except FileNotFoundError:
         print("未找到 ChampionTour.txt.json 文件")
     except json.JSONDecodeError:
@@ -93,8 +94,6 @@ def main():
     import sys
     if len(sys.argv) == 1:
         print("正在处理所有比赛...")
-        with open("champions_part.txt.json", "w+", encoding="utf-8") as f:
-            f.write("")
         process_all_events()
     elif len(sys.argv) == 2:
         event_id = sys.argv[1]

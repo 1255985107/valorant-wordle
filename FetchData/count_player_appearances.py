@@ -7,7 +7,7 @@ def count_player_appearances():
         content = f.read()
     
     # 分割多个JSON对象
-    json_parts = content.split('}{')
+    json_parts = content.split('},{')
     
     # 处理分割后的每个部分
     for i in range(len(json_parts)):
@@ -23,7 +23,7 @@ def count_player_appearances():
             data = json.loads(part)
             if 'player_ids' in data:
                 for player in data['player_ids']:
-                    player_ids.append(player['id'])
+                    player_ids.append(player['name'])
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {e}")
             continue
@@ -35,9 +35,11 @@ def count_player_appearances():
     sorted_appearances = dict(sorted(appearances.items(), key=lambda x: x[1], reverse=True))
     
     # 将结果保存到文件
-    with open('player_appearances.txt', 'w', encoding='utf-8') as f:
-        for player_id, count in sorted_appearances.items():
-            f.write(f"Player ID: {player_id}, Appearances: {count}\n")
+    data = {}
+    for player_name, count in sorted_appearances.items():
+        data[player_name] = count
+    with open('player_appearances.txt.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4)
     
     print("统计结果已保存到 player_appearances.txt")
 
