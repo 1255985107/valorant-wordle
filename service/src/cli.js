@@ -6,28 +6,25 @@ const { getPlayerByGameId } = require('../server/playerService');
 // 格式化输出选手信息
 function formatPlayerInfo(player) {
     if (!player) {
-        console.log(chalk.red('未找到选手信息'));
+        console.log(chalk.red('Player not found'));
         return;
     }
 
-    console.log(chalk.bold.cyan('\n选手基本信息:'));
-    console.log(chalk.white('游戏ID: ') + chalk.yellow(player.gameid));
-    console.log(chalk.white('真实姓名: ') + chalk.yellow(player.realname));
-    console.log(chalk.white('国籍: ') + chalk.yellow(player.nationality));
-
-    if (player.teamname) {
-        console.log(chalk.bold.cyan('\n队伍信息:'));
-        console.log(chalk.white('当前队伍: ') + chalk.yellow(player.teamname));
-    }
+    console.log(chalk.bold.cyan('\nInfo:'));
+    console.log(chalk.white('ID: ') + chalk.yellow(player.gameid));
+    console.log(chalk.white('Realname: ') + chalk.yellow(player.realname));
+    console.log(chalk.white('Nation: ') + chalk.yellow(player.nationality));
+    console.log(chalk.white('Team: ') + chalk.yellow(player.teamname));
+    console.log(chalk.white('S-Tier: ') + chalk.yellow(player.stier));
 
     if (player.agents && player.agents.length > 0) {
-        console.log(chalk.bold.cyan('\n常用特工:'));
-        player.agents.forEach(agent => {
-            console.log(chalk.white(`${agent.agentName}: `) + 
-                chalk.yellow(`${agent.roundsPlayed} 回合`) +
-                chalk.gray(` (使用率: ${agent.useRate})`));
+        console.log(chalk.bold.cyan('Signature Agents:'));
+        player.agents.map(agent => {
+            console.log(chalk.white(`${agent.agent}: `) + 
+                chalk.yellow(`${agent.roundsPlayed} rounds`));
         });
     }
+    process.exit(0);
 }
 
 // 设置命令行选项
@@ -45,6 +42,7 @@ program
             console.log(chalk.cyan('正在查询选手信息...'));
             const playerData = await getPlayerByGameId(gameid);
             formatPlayerInfo(playerData);
+            process.exit(0);
         } catch (error) {
             console.error(chalk.red`查询失败: ` + error.message);
             process.exit(1);
