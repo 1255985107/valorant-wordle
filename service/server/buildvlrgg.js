@@ -39,10 +39,6 @@ async function buildvlrgg(connection, file) {
             console.log(`Event ${event.event_id} loaded`);
         }
         console.log('Data load complete');
-
-        for (const vlrid of players_upd) {
-            await updateFromAPI(connection, vlrid);
-        }
     } catch (err) {
         await connection.rollback();
         console.error('Data load error:', err);
@@ -50,6 +46,20 @@ async function buildvlrgg(connection, file) {
     }
 }
 
+async function updateallplayers(connection, file) {
+    players_upd = [];
+    await connection.beginTransaction();
+    const rawData = await fs.readFile(path.resolve(__dirname, file));
+    const events = JSON.parse(rawData);
+    for (const event of events) {
+       players_upd.push(event.player_ids);
+    }
+    for (const player of players_upd) {
+        for (const playerid of player) {
+            await updateFromAPI(connection, playerid.id);
+        }
+    }
+}
 // 主执行函数
 async function main() {
     const connection = await pool.getConnection();
