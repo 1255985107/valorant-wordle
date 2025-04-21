@@ -1,0 +1,3 @@
+[submodule "StatsVLR-API"]
+	path = StatsVLR-API
+	url = https://github.com/1255985107/StatsVLR-API.git
