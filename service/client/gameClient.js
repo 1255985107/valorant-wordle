@@ -28,11 +28,17 @@ class GameState {
     try {
       const [rows] = await connection.query(
         'SELECT vlrid, gameid FROM vlrgg WHERE gameid NOT IN (?) ORDER BY RAND() LIMIT 1',
-        [[...this.previousAnswers]]
+        1
       );
+      console.log(rows[0]);
       return rows[0];
+    } catch (error) {
+      console.error('Database error:', error);
+      throw error;
     } finally {
-      connection.release();
+      if (connection && connection._socket) {
+        connection.release();
+      }
     }
   }
 
@@ -40,13 +46,21 @@ class GameState {
     const answerPlayer = await getPlayerByGameId(this.currentAnswer.gameid);
     const guessPlayer = await getPlayerByGameId(guessGameId);
 
+    if (!guessPlayer) {
+      return null;
+    }
+
+    this.agentColors = guessPlayer.agents.map(guessAgent => {
+      const hasMatch = answerPlayer.agents.some(answerAgent => answerAgent.agent === guessAgent.agent);
+      return hasMatch ? 'GREEN' : 'WHITE';
+    });
+
     return {
-      team: this.getColorCode(answerPlayer.teamid === guessPlayer.teamid, answerPlayer.teamname === guessPlayer.teamname),
-      nationality: this.getColorCode(answerPlayer.nationality === guessPlayer.nationality),
-      agents: this.getColorCode(
-        this.hasCommonAgent(answerPlayer.agents, guessPlayer.agents),
-        this.similarAgentCount(answerPlayer.agents, guessPlayer.agents)
-      )
+      ...guessPlayer,
+      col_team: this.getColorCode(answerPlayer.teamid === guessPlayer.teamid, answerPlayer.teamid === guessPlayer.teamid),
+      col_nationality: this.getColorCode(answerPlayer.nationalitylogo === guessPlayer.nationalitylogo, answerPlayer.continent === guessPlayer.continent),
+      col_worldsapp: this.getColorCode(answerPlayer.worldsapp === guessPlayer.worldsapp, Math.abs(answerPlayer.worldsapp - guessPlayer.worldsapp) < 3),
+      agentColors: this.agentColors
     };
   }
 
@@ -54,15 +68,6 @@ class GameState {
     return exactMatch ? 'GREEN' : partialMatch ? 'YELLOW' : 'WHITE';
   }
 
-  hasCommonAgent(answerAgents, guessAgents) {
-    return answerAgents.some(a => guessAgents.some(g => g.agent === a.agent));
-  }
-
-  similarAgentCount(answerAgents, guessAgents) {
-    return answerAgents.filter(a => 
-      guessAgents.some(g => g.agent === a.agent && Math.abs(g.roundsPlayed - a.roundsPlayed) <= 5)
-    ).length;
-  }
 }
 
 function createInterface() {
@@ -80,18 +85,25 @@ async function gameLoop() {
   
   const askGuess = async () => {
     if (game.remainingGuesses <= 0) {
-      console.log(`\n正确答案是：${colors.YELLOW}${game.currentAnswer.gameid}${colors.RESET}`);
+      console.log(`\nAnswer: ${colors.YELLOW}${game.currentAnswer.gameid}${colors.RESET}`);
       return handleGameEnd(rl);
     }
 
-    rl.question(`剩余次数 ${game.remainingGuesses} 请输入选手gameid：`, async (input) => {
+    rl.question(`Chances left: ${game.remainingGuesses}\n Please input a gameid: `, async (input) => {
       const result = await game.compareGuess(input);
-      
-      console.log(`\n队伍：${colors[result.team]}${result.team}${colors.RESET}`);
-      console.log(`国籍：${colors[result.nationality]}${result.nationality}${colors.RESET}`);
-      console.log(`特工：${colors[result.agents]}${result.agents}${colors.RESET}\n`);
 
-      if (input === game.currentAnswer.gameid) {
+      if (!result) {
+        console.log(`\n${colors.YELLOW}Player not found.${colors.RESET}`);
+        askGuess();
+        return;
+      }
+      
+      console.log(`Team Name: ${colors[result.col_team]}${result.teamname}${colors.RESET}`);
+      console.log(`Nation/Region: ${colors[result.col_nationality]}${result.nationalitylogo}${colors.RESET}`);
+      console.log(`Signature Agents: ${result.agents.map((agent, index) => `${colors[result.agentColors[index]]}${agent.agent}${colors.RESET}`).join(' ')}`);
+      console.log(`Worlds App.: ${colors[result.col_worldsapp]}${result.worldsapp}${colors.RESET}`);
+
+      if (input.toLowerCase() === game.currentAnswer.gameid.toLowerCase()) {
         console.log(`${colors.GREEN}You guess it!${colors.RESET}`);
         return handleGameEnd(rl);
       }
@@ -106,7 +118,7 @@ async function gameLoop() {
 }
 
 function handleGameEnd(rl) {
-  rl.question('输入 r 重新开始，其他键退出：', (answer) => {
+  rl.question('input \'r\' to restart, otherwise quit...', (answer) => {
     if (answer.toLowerCase() === 'r') {
       rl.close();
       gameLoop().catch(console.error);
@@ -117,4 +129,5 @@ function handleGameEnd(rl) {
 }
 
 // 启动游戏
+console.log('Welcome to the VLRGG Guessing Game!');
 gameLoop().catch(console.error);

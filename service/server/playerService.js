@@ -16,8 +16,6 @@ async function getPlayerByGameId(gameid) {
         );
 
         if (existingPlayers.length === 0) {
-            console.log('Player not found in vlrgg table.');
-            await connection.commit();
             return null;
         }
 
@@ -27,33 +25,31 @@ async function getPlayerByGameId(gameid) {
             [vlrid]
         );
 
-        if (players.length === 0 || isDataExpired(players[0].upd_time)) {
+        if (players.length === 0 || isDataExpired(players[0].upd_time)) 
             return updateFromAPI(connection, vlrid);
-        } else {
-            // 使用数据库中的现有数据
-            const [playerResult] = await connection.execute(
-                `SELECT p.*, t.teamname, t.teamlogo, n.nationalitylogo
-                 FROM players p
-                 LEFT JOIN teams t ON p.teamid = t.teamid
-                 LEFT JOIN nationalities n ON p.nationality = n.nationality
-                 WHERE p.gameid = ?
-                 GROUP BY p.vlrid`,
-                [gameid]
-            );
-            const [agents] = await connection.execute(
-                'SELECT agent, roundsPlayed FROM useagents WHERE vlrid =?',
-                [vlrid]
-            );
-            const [S_TIER] = await connection.execute(
-                'SELECT count(*) as cnt FROM participate WHERE vlrid =?',
-                [vlrid]
-            );
-            return {
-                ...playerResult[0],
-                stier: S_TIER[0].cnt,
-                agents: agents
-            };
-        }
+        // 使用数据库中的现有数据
+        const [playerResult] = await connection.execute(
+            `SELECT p.*, t.teamname, t.teamlogo, n.nationalitylogo, n.continent
+                FROM players p
+                LEFT JOIN teams t ON p.teamid = t.teamid
+                LEFT JOIN nationalities n ON p.nationality = n.nationality
+                WHERE p.vlrid = ?`,
+            [vlrid]
+        );
+        const [agents] = await connection.execute(
+            'SELECT agent, roundsPlayed FROM useagents WHERE vlrid =?',
+            [vlrid]
+        );
+        const [S_TIER] = await connection.execute(
+            'SELECT count(*) as cnt FROM participate WHERE vlrid =?',
+            [vlrid]
+        );
+        await connection.commit();
+        return {
+            ...playerResult[0],
+            worldsapp: S_TIER[0].cnt,
+            agents: agents
+        };
     } catch (error) {
         if (connection) {
             await connection.rollback();

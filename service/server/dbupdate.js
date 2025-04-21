@@ -76,32 +76,38 @@ async function updatePlayerAgents(connection, vlrid, agents) {
 }
 
 async function updateFromAPI(connection, vlrid) {
-    // 从API获取新数据
-    console.log('Fetching data from API ${vlrid}...', vlrid);
-    const apiData = await fetchPlayerFromAPI(vlrid);
-    let playerData = apiData.data;
+    const MAX_RETRIES = 3;
+    let retryCount = 0;
+    
+    while (retryCount <= MAX_RETRIES) { try {
+        if (connection.connection._closing) {
+            connection = await pool.getConnection();
+        }
+        
+        console.log(`Fetching data from API ${vlrid}...`);
+        const apiData = await fetchPlayerFromAPI(vlrid);
+        let playerData = apiData.data;
 
-    console.log('Data fetched successfully.');
+        await connection.beginTransaction();
+        await upsertTeam(connection, playerData.team);
+        await upsertNationality(connection, playerData.info.country, playerData.info.flag);
+        await updatePlayer(connection, playerData);
+        await updatePlayerAgents(connection, playerData.info.id, playerData.agents);
+        await connection.commit();
 
-    await connection.beginTransaction();
-    await upsertTeam(connection, playerData.team);
-    await upsertNationality(connection, playerData.info.country, playerData.info.flag);
-    await updatePlayer(connection, playerData);
-    await updatePlayerAgents(connection, playerData.info.id, playerData.agents);
-    await connection.commit();
-
-    return {
-        "vlrid": playerData.info.id,
-        "gameid": playerData.info.user,
-        "realname": playerData.info.name,
-        "nationality": playerData.info.country,
-        "teamname": playerData.team.name,
-        "teamlogo": playerData.team.logo,
-        "agents": playerData.agents.map(agent => ({
-            "agent": agent.agentName,
-            "roundsPlayed": agent.roundsPlayed
-        }))
-    };
+        return {
+            "vlrid": playerData.info.id,
+            "gameid": playerData.info.user,
+            "realname": playerData.info.name,
+            "nationality": playerData.info.country,
+            "teamname": playerData.team.name,
+            "teamlogo": playerData.team.logo,
+            "agents": playerData.agents.slice(0, 3).map(agent => ({
+                "agent": agent.agentName,
+                "roundsPlayed": agent.roundsPlayed
+            }))
+        };
+    } catch (error) {retryCount++;}}
 }
 
 module.exports = {
