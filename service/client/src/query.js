@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const { program } = require('commander');
 const chalk = require('chalk');
-const { getPlayerByGameId } = require('../server/playerService');
+const { getPlayerByGameId } = require('../../server/playerService');
 
 // 格式化输出选手信息
 function formatPlayerInfo(player) {

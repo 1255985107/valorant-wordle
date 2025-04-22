@@ -62,6 +62,25 @@ async function getPlayerByGameId(gameid) {
     }
 }
 
+async function getRandomPlayer() {
+    const connection = await pool.getConnection();
+    try {
+        const [rows] = await connection.query(
+            'SELECT vlrid, gameid FROM vlrgg WHERE gameid NOT IN (?) ORDER BY RAND() LIMIT 1',
+            1
+        );
+        return getPlayerByGameId(rows[0].gameid);
+    } catch (error) {
+        console.error('Database error:', error);
+        throw error;
+    } finally {
+        if (connection && connection._socket) {
+            connection.release();
+        }
+    }
+}
+
 module.exports = {
-    getPlayerByGameId
+    getPlayerByGameId,
+    getRandomPlayer
 };
