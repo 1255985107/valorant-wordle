@@ -3,7 +3,6 @@ import { getIndexInfo, searchSubjects } from '../utils/anime';
 import { useState, useEffect, useRef } from 'react';
 
 function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hideRestart = false }) {
-  const [indexInputValue, setIndexInputValue] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const searchContainerRef = useRef(null);
 
@@ -36,13 +35,6 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
-
-  // Initialize indexInputValue and fetch indexInfo if indexId exists
-  useEffect(() => {
-    if (gameSettings.useIndex && gameSettings.indexId) {
-      setIndexInputValue(gameSettings.indexId);
-    }
-  }, []);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;

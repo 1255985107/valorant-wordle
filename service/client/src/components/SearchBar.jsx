@@ -145,7 +145,6 @@ function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
 
   const renderSearchResults = () => {
     if (searchResults.length === 0) return null;
-    console.log(searchResults);
     return (
       <div className="search-dropdown">
         {isSearching ? (

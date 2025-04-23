@@ -19,7 +19,7 @@ function SocialLinks({ onSettingsClick, onHelpClick }) {
       <a href="https://github.com/1255985107/valorant-wordle" target="_blank" rel="noopener noreferrer" className="social-link">
         <i className="fab fa-github"></i>
       </a>
-      <a href="https://space.bilibili.com/87983557" target="_blank" rel="noopener noreferrer" className="social-link">
+      <a href="https://space.bilibili.com/283419569" target="_blank" rel="noopener noreferrer" className="social-link">
         <i className="fa-brands fa-bilibili"></i>
       </a>
     </div>

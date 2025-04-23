@@ -23,9 +23,15 @@ function GameEndPopup({ result, answer, onClose }) {
                   rel="noopener noreferrer"
                   className="character-link"
                 >
-                  <div className="answer-character-name">{answer.gameid}</div>
+                  <div className="answer-character-name">
+                    <img src={`https://flagsapi.com/${answer.nationalitylogo.toUpperCase()}/flat/64.png`}/> {answer.gameid}
+                  </div>
                   <div className="answer-character-name-cn">{answer.realname}</div>
                 </a>
+                <div className="answer-character-team">
+                  <img src={answer.teamlogo} />
+                  {answer.teamname}
+                </div>
               </div>
             </div>
           </div>

@@ -259,6 +259,25 @@
   color: #1e293b;
 }
 
+.answer-character-name img {
+  height: 100%;
+  width: 30px;
+  object-fit: contain;
+}
+
+.answer-character-team {
+  width: 300px;
+  height: 40px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+}
+
+.answer-character-team img {
+  width: 40px;
+  object-fit: contain;
+}
+
 .button-container {
   position: absolute;
   right: 0;
