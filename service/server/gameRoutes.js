@@ -1,14 +1,55 @@
 const express = require('express');
 const router = express.Router();
-const { getPlayerByGameId, getRandomPlayer } = require('../playerService');
+const { getRandomPlayer, searchPlayers, getPlayerByGameId } = require('./getPlayerbyId');
 
 router.get('/initialize', async (req, res) => {
-  try {
-    const answerPlayer = await getRandomPlayer();
-    res.json(answerPlayer);
-  } catch (error) {
-    res.status(500).json({ error: '初始化失败' });
+  console.log(`GET /api/initialize`);
+  let retrytime = 3;
+  while (retrytime > 0) {
+    try {
+      const answerPlayer = await getRandomPlayer();
+      if (answerPlayer) {
+        res.json(answerPlayer);
+        return;
+      }
+    } catch(e) {
+      retrytime--;
+    }
   }
+  res.status(500).json({ error: 'Initialization Error' });
+});
+
+router.get('/search', async (req, res) => {
+  console.log(`GET /api/search on ${req.query.prefix}`);
+  let retrytime = 3;
+  while (retrytime > 0) {
+    try {
+      const players = await searchPlayers(req.query.prefix);
+      if (players) {
+        res.json(players);
+        return;
+      }
+    } catch(e) {
+      retrytime--;
+    }
+  }
+});
+
+router.get('/player', async (req, res) => {
+  console.log(`GET /api/player on ${req.query.gameid}`);
+  let retrytime = 3;
+  while (retrytime > 0) {
+    try {
+      const player = await getPlayerByGameId(req.query.gameid);
+      if (player) {
+        res.json(player);
+        return;
+      }
+    } catch(e) {
+      retrytime--;
+    }
+  }
+  res.json(null);
 });
 
 router.post('/compare', async (req, res) => {

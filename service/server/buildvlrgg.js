@@ -2,7 +2,7 @@ const mysql = require('mysql2/promise');
 const axios = require('axios');
 const fs = require('fs/promises');
 const path = require('path');
-const { updateFromAPI } = require('./dbupdate');
+const { updateFromAPI, updatebirthFromAPI } = require('./dbupdate');
 const { connect } = require('http2');
 
 // 创建数据库连接池
@@ -66,7 +66,7 @@ async function updateAllPlayers(connection, file) {
             for (const player of event.player_ids) {
                 const record = `${player.name}:${player.id}`;
                 if (!players_upd.has(record)) {
-                    await updateFromAPI(connection, player.id);
+                    await updatebirthFromAPI(connection, player.name);
                     players_upd.add(record);
                     await fs.appendFile(progressFile, `${record}\n`);
                 }

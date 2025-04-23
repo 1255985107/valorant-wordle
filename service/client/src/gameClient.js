@@ -1,6 +1,5 @@
-const readline = require('readline');
-const mysql = require('mysql2/promise');
-const { getPlayerByGameId, getRandomPlayer } = require('../../server/playerService');
+import readline from 'readline';
+import GameState from './utils/GameState.js';
 
 const colors = {
   GREEN: '\x1b[32m',
@@ -8,47 +7,6 @@ const colors = {
   WHITE: '\x1b[37m',
   RESET: '\x1b[0m'
 };
-
-class GameState {
-  constructor() {
-    this.remainingGuesses = 8;
-    this.guessHistory = [];
-    this.previousAnswers = new Set();
-    this.answerPlayer = null;
-  }
-
-  async initialize() {
-    // this.answerPlayer = await axios.get(`http://localhost:5101/initialize`);
-    this.answerPlayer = await getRandomPlayer();
-  }
-
-  async compareGuess(guessGameId) {
-    const guessPlayer = await getPlayerByGameId(guessGameId);
-
-    if (!guessPlayer) {
-      return null;
-    }
-
-    this.agentColors = guessPlayer.agents.map(guessAgent => {
-      const hasMatch = this.answerPlayer.agents.some(answerAgent => answerAgent.agent === guessAgent.agent);
-      return hasMatch ? 'GREEN' : 'WHITE';
-    });
-
-    return {
-      ...guessPlayer,
-      col_team: this.getColorCode(this.answerPlayer.teamid === guessPlayer.teamid, this.answerPlayer.teamid === guessPlayer.teamid),
-      col_nationality: this.getColorCode(this.answerPlayer.nationalitylogo === guessPlayer.nationalitylogo, this.answerPlayer.continent === guessPlayer.continent),
-      col_worldsapp: this.getColorCode(this.answerPlayer.worldsapp === guessPlayer.worldsapp, Math.abs(this.answerPlayer.worldsapp - guessPlayer.worldsapp) < 3),
-      agentColors: this.agentColors,
-      tip_worldsapp: this.answerPlayer.worldsapp !== guessPlayer.worldsapp? ((this.answerPlayer.worldsapp > guessPlayer.worldsapp)? '↑' : '↓') : '',
-    };
-  }
-
-  getColorCode(exactMatch, partialMatch) {
-    return exactMatch ? 'GREEN' : partialMatch ? 'YELLOW' : 'WHITE';
-  }
-
-}
 
 function createInterface() {
   return readline.createInterface({
@@ -66,12 +24,13 @@ function outputplayer(result) {
 
 async function gameLoop() {
   const game = new GameState();
+  let remainingGuesses = 8;
   await game.initialize();
   
   const rl = createInterface();
   
   const askGuess = async () => {
-    if (game.remainingGuesses <= 0) {
+    if (remainingGuesses <= 0) {
       console.log(`\nAnswer:${colors.GREEN}${game.answerPlayer.gameid}${colors.RESET}`);
       outputplayer({
         ...game.answerPlayer,
@@ -84,7 +43,7 @@ async function gameLoop() {
       return handleGameEnd(rl);
     }
 
-    rl.question(`Chances left: ${game.remainingGuesses}\n Please input a gameid: `, async (input) => {
+    rl.question(`Chances left: ${remainingGuesses}\n Please input a gameid: `, async (input) => {
       const result = await game.compareGuess(input);
 
       if (!result) {
@@ -100,7 +59,7 @@ async function gameLoop() {
         return handleGameEnd(rl);
       }
 
-      game.remainingGuesses--;
+      remainingGuesses--;
       game.guessHistory.push(input);
       askGuess();
     });
@@ -121,10 +80,5 @@ function handleGameEnd(rl) {
 }
 
 // 启动游戏
-console.log('Welcome to the VLRGG Guessing Game!');
+console.log('Welcome to the Valorant Player Guessing Game!');
 gameLoop().catch(console.error);
-
-module.exports = {
-  GameState,
-  createInterface
-};
