@@ -30,18 +30,15 @@ async function upsertNationality(connection, nationality, nationalitylogo) {
 
 // 更新player信息
 async function updatePlayer(connection, playerData) {
-    const query = 'INSERT INTO players (vlrid, gameid, realname, birthdate, nationality, teamid, profile_url, upd_time) VALUES (?, ?, ?, ?, ?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE gameid = ?, realname = ?, birdate = ?, nationality = ?, teamid = ?, profile_url = ?, upd_time = NOW()';
+    const query = 'INSERT INTO players (vlrid, gameid, realname, nationality, teamid, profile_url, upd_time) VALUES (?, ?, ?, ?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE gameid = ?, nationality = ?, teamid = ?, profile_url = ?, upd_time = NOW()';
     await connection.execute(query, [
         playerData.info.id,
         playerData.info.user,
         playerData.info.name,
-        playerData.birthdate,
         playerData.info.country,
         playerData.team.id,
         playerData.info.img,
         playerData.info.user,
-        playerData.info.name,
-        playerData.birthdate,
         playerData.info.country,
         playerData.team.id,
         playerData.info.img
@@ -64,27 +61,31 @@ async function fetchPlayerFromAPI(vlrid) {
 }
 
 async function fetchBirthFromLiquid(gameid) {
-    console.log(`Fetching birth from liquipedia ${gameid}...`);
-    const response = await axios.get(`https://liquipedia.net/valorant/api.php`, {
-        params: {
-            action: 'query',
-            format: 'json',
-            prop: 'extracts',
-            titles: gameid,
-            exintro: 1,
-            explaintext: 1
-        },
-        headers: {
-            'User-Agent': 'ValorantPlayerLookup/1.0',
-            'Accept-Encoding': 'gzip'
-        }
-    });
+	let retryCount = 3;
+	while (retryCount > 0) {
+		const response = await axios.get(`https://liquipedia.net/valorant/api.php`, {
+			params: {
+				action: 'query',
+				format: 'json',
+				prop: 'extracts',
+				titles: gameid,
+				exintro: 1,
+				explaintext: 1
+			},
+			headers: {
+				'User-Agent': 'ValorantPlayerLookup/1.0',
+				'Accept-Encoding': 'gzip'
+			}
+		});
+	
+		const pages = response.data.query.pages;
+		const pageId = Object.keys(pages)[0];
+		
+		if (pageId !== '-1') break;
+		retryCount--;
+	}
+	if (pageId === '-1') return null;
 
-    const pages = response.data.query.pages;
-    const pageId = Object.keys(pages)[0];
-    
-    if (pageId === '-1') return null;
-    
     const content = pages[pageId].extract;
     const regex = /born\s+([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})/i;
     const dobMatch = content.match(regex);
@@ -126,18 +127,13 @@ async function updateFromAPI(connection, vlrid, gameid) {
         }
         
         console.log(`Fetching data from API ${vlrid}...`);
-        const apiData = await fetchPlayerFromAPI(vlrid);
-        const birthdate = await fetchBirthFromLiquid(gameid);
-
-        let playerData = {
-            ...apiData.data,
-            birthdate: birthdate
-        };
+        const playerData = await fetchPlayerFromAPI(vlrid);
 
         await connection.beginTransaction();
         await upsertTeam(connection, playerData.team);
         await upsertNationality(connection, playerData.info.country, playerData.info.flag);
         await updatePlayer(connection, playerData);
+		await updatebirthFromAPI(connection, gameid);
         await updatePlayerAgents(connection, playerData.info.id, playerData.agents);
         await connection.commit();
 
@@ -158,8 +154,11 @@ async function updateFromAPI(connection, vlrid, gameid) {
 
 async function updatebirthFromAPI(connection, gameid) {
     const birthdate = await fetchBirthFromLiquid(gameid);
+	if (birthdate)
+		return false;
     const query = `UPDATE players SET birthdate =${birthdate? ('\'' + birthdate + '\''):  null} WHERE gameid ='${gameid}'`;
     await connection.execute(query);
+	return true;
 }
 
 module.exports = {

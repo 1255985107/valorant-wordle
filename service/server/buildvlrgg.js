@@ -66,9 +66,10 @@ async function updateAllPlayers(connection, file) {
             for (const player of event.player_ids) {
                 const record = `${player.name}:${player.id}`;
                 if (!players_upd.has(record)) {
-                    await updatebirthFromAPI(connection, player.name);
+                    const result = await updatebirthFromAPI(connection, player.name);
                     players_upd.add(record);
-                    await fs.appendFile(progressFile, `${record}\n`);
+                    if(result)
+						await fs.appendFile(progressFile, `${record}\n`);
                 }
             }
         }

@@ -133,7 +133,7 @@ function SinglePlayer() {
 
     const initializeNewGame = async () => {
       try {
-        await curgame.initialize();
+        await curgame.initialize(gameSettings.minWorldsApp);
         setGuessesLeft(gameSettings.maxAttempts);
         setCurrentTimeLimit(gameSettings.timeLimit);
         console.log('Initialization with', gameSettings);

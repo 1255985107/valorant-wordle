@@ -10,7 +10,7 @@ async function searchPlayers(prefix) {
         connection = await pool.getConnection();
 
         const [players] = await connection.execute(
-            `SELECT gameid, realname FROM players WHERE gameid LIKE ?`,
+            `SELECT gameid, realname FROM vlrgg WHERE gameid LIKE ?`,
             [`${prefix}%`]
         )
         return players;
@@ -26,27 +26,12 @@ async function searchPlayers(prefix) {
     }
 }
 
-async function getPlayerByGameId(gameid) {
-    let connection;
+async function getPlayerByVLRId(connection, vlrid) {
     try {
-        connection = await pool.getConnection();
-        await connection.beginTransaction();
-
-        const [existingPlayers] = await connection.execute(
-            'SELECT vlrid FROM vlrgg WHERE gameid =?',
-            [gameid]
-        );
-
-        if (existingPlayers.length === 0) {
-            return null;
-        }
-
-        const vlrid = existingPlayers[0].vlrid;
         const [players] = await connection.execute(
             'SELECT *, UNIX_TIMESTAMP(upd_time) as upd_timestamp FROM players WHERE vlrid = ?',
             [vlrid]
         );
-
         if (players.length === 0 || isDataExpired(players[0].upd_time)) 
             updateFromAPI(connection, vlrid);
         const [playerResult] = await connection.execute(
@@ -75,6 +60,7 @@ async function getPlayerByGameId(gameid) {
         if (connection) {
             await connection.rollback();
         }
+        console.error('Database error:', error);
         throw error;
     } finally {
         if (connection) {
@@ -83,21 +69,39 @@ async function getPlayerByGameId(gameid) {
     }
 }
 
-async function getRandomPlayer() {
+async function getPlayerByGameId(gameid) {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+    
+        const [existingPlayers] = await connection.execute(
+            'SELECT vlrid FROM vlrgg WHERE gameid =?',
+            [gameid]
+        );
+    
+        if (existingPlayers.length === 0) {
+            return null;
+        }
+    
+        const vlrid = existingPlayers[0].vlrid;
+        return await getPlayerByVLRId(connection, vlrid);
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getRandomPlayer(minWorldsApp) {
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.query(
-            'SELECT vlrid, gameid FROM vlrgg WHERE gameid NOT IN (?) ORDER BY RAND() LIMIT 1',
-            1
+        const [players] = await connection.query(
+            'SELECT vlrid FROM participate GROUP BY vlrid HAVING COUNT(*) >=? ORDER BY RAND() LIMIT 1',
+            [minWorldsApp]
         );
-        return getPlayerByGameId(rows[0].gameid);
+        console.log(`Getting Random Player with minWorldsApp >= ${minWorldsApp} : vlrid = ${players[0].vlrid}`);
+        return await getPlayerByVLRId(connection, players[0].vlrid);
     } catch (error) {
-        console.error('Database error:', error);
         throw error;
-    } finally {
-        if (connection && connection._socket) {
-            connection.release();
-        }
     }
 }
 

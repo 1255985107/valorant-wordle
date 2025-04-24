@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 
 function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hideRestart = false }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const searchContainerRef = useRef(null);
 
   // Handle click outside to close dropdown

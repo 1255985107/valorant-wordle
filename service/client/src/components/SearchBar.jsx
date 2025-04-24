@@ -2,6 +2,9 @@ import { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/search.css';
 
+// const api_url = 'http://cd01.idc.jihujiasuqi.com:58095/api';
+const api_url = 'http://localhost:5101/api'
+
 function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -70,7 +73,7 @@ function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
     loadingState(true);
     try {
       const response = await axios.get(
-        `http://localhost:5101/api/search`,{
+        `${api_url}/search`,{
           params: {
             prefix: searchQuery.trim(),
           }

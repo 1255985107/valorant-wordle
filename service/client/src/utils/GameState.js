@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+// const api_url = 'http://cd01.idc.jihujiasuqi.com:58095/api'
+const api_url = 'http://localhost:5101/api'
+
 class GameState {
   constructor() {
     this.guessHistory = [];
@@ -9,14 +12,18 @@ class GameState {
 
   async initialize(minWorldsApp) {
     // this.answerPlayer = await getRandomPlayer();
-    const response = await axios.get(`http://localhost:5101/api/initialize`);
+    const response = await axios.get(`${api_url}/initialize`, {
+      params: {
+        minWorldsApp: minWorldsApp
+      }
+    });
     this.answerPlayer = response.data;
     console.log(this.answerPlayer);
   }
 
   async compareGuess(guessGameId) {
     // const guessPlayer = await getPlayerByGameId(guessGameId);
-    const response = await axios.get(`http://localhost:5101/api/player`, {
+    const response = await axios.get(`${api_url}/player`, {
       params: {
         gameid: guessGameId
       }

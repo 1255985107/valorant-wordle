@@ -7,7 +7,7 @@ router.get('/initialize', async (req, res) => {
   let retrytime = 3;
   while (retrytime > 0) {
     try {
-      const answerPlayer = await getRandomPlayer();
+      const answerPlayer = await getRandomPlayer(req.query.minWorldsApp);
       if (answerPlayer) {
         res.json(answerPlayer);
         return;
