@@ -124,7 +124,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                 )}
               </div>
               <div className="settings-row">
-                <label>(settings may have bugs, especially with "*")</label>
+                <label>(settings with "*" may have bugs)</label>
               </div>
               
             </div>

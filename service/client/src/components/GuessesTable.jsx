@@ -9,7 +9,7 @@ function GuessesTable({ guesses }) {
           <tr>
             <th></th>
             <th>Name</th>
-            <th>Team</th>
+            <th>Last Team</th>
             <th>Nation/Region</th>
             <th>Worlds App.</th>
             <th>Signature Agents</th>
