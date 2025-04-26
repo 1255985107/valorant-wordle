@@ -41,7 +41,7 @@ class GameState {
     return {
       ...guessPlayer,
       col_team: this.getColorCode(this.answerPlayer.teamid === guessPlayer.teamid, this.answerPlayer.teamid === guessPlayer.teamid),
-      col_nationality: this.getColorCode(this.answerPlayer.nationalitylogo === guessPlayer.nationalitylogo, this.answerPlayer.continent === guessPlayer.continent),
+      col_nationality: this.getColorCode(this.answerPlayer.nationality === guessPlayer.nationality, this.answerPlayer.continent === guessPlayer.continent),
       col_worldsapp: this.getColorCode(this.answerPlayer.worldsapp === guessPlayer.worldsapp, Math.abs(this.answerPlayer.worldsapp - guessPlayer.worldsapp) < 3),
       agentColors: this.agentColors,
       tip_worldsapp: this.answerPlayer.worldsapp !== guessPlayer.worldsapp? ((this.answerPlayer.worldsapp > guessPlayer.worldsapp)? '↑' : '↓') : '',

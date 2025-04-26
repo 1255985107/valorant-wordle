@@ -8,6 +8,7 @@ export default defineConfig({
     host: '0.0.0.0',
     allowedHosts: [
       'localhost',
+      'cd01.idc.jihujiasuqi.com',
     ]
   }
 })

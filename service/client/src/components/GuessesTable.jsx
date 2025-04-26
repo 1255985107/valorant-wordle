@@ -9,6 +9,7 @@ function GuessesTable({ guesses }) {
           <tr>
             <th></th>
             <th>Name</th>
+            <th></th>
             <th>Last Team</th>
             <th>Nation/Region</th>
             <th>Worlds App.</th>
@@ -29,14 +30,17 @@ function GuessesTable({ guesses }) {
               </td>
               <td>
                 <span className={`feedback-cell ${guess.col_team === 'GREEN' ? 'correct' : ''}`}>
-                  <img src={guess.teamlogo} alt={guess.teamname} className="team-icon" />
+                  <img src={guess.teamlogo} className="team-icon" />
+                </span>
+              </td>
+              <td>
+                <span className={`feedback-cell ${guess.col_team === 'GREEN' ? 'correct' : ''}`}>
                   <p> {guess.teamname}</p>
                 </span>
-                
               </td>
               <td>
                 <span className={`feedback-cell ${guess.col_nationality === 'GREEN' ? 'correct' : (guess.col_nationality === 'YELLOW') ? 'partial' : ''}`}>
-                  <img src={`https://flagsapi.com/${guess.nationlogo.toUpperCase()}/flat/64.png`} alt={guess.nationlogo} className='agent-small-icon'/>
+                  <img src={`https://flagsapi.com/${guess.nationlogo}/flat/64.png`} alt={guess.nationlogo} className='agent-small-icon'/>
                 </span>
               </td>
               <td>

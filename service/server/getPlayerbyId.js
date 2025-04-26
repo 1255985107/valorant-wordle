@@ -28,6 +28,9 @@ async function searchPlayers(prefix) {
 
 async function getPlayerByVLRId(connection, vlrid) {
     try {
+		if (connection.connection._closing) {
+            connection = await pool.getConnection();
+        }
         const [players] = await connection.execute(
             'SELECT *, UNIX_TIMESTAMP(upd_time) as upd_timestamp FROM players WHERE vlrid = ?',
             [vlrid]
@@ -51,6 +54,11 @@ async function getPlayerByVLRId(connection, vlrid) {
             [vlrid]
         );
         await connection.commit();
+		if (playerResult[0].nationality === "taiwan" || playerResult[0].nationality === "hong kong"){
+			if(playerResult[0].nationality === "taiwan")
+                playerResult[0].nationalitylogo = "cn";
+            playerResult[0].nationality = "china";
+		}
         return {
             ...playerResult[0],
             worldsapp: S_TIER[0].cnt,
@@ -92,13 +100,15 @@ async function getPlayerByGameId(gameid) {
 }
 
 async function getRandomPlayer(minWorldsApp) {
-    const connection = await pool.getConnection();
+	let connection;
+    const mins = minWorldsApp || 1;
     try {
+		connection = await pool.getConnection();
         const [players] = await connection.query(
             'SELECT vlrid FROM participate GROUP BY vlrid HAVING COUNT(*) >=? ORDER BY RAND() LIMIT 1',
-            [minWorldsApp]
+            [mins]
         );
-        console.log(`Getting Random Player with minWorldsApp >= ${minWorldsApp} : vlrid = ${players[0].vlrid}`);
+        console.log(`Getting Random Player with minWorldsApp >= ${mins} : vlrid = ${players[0].vlrid}`);
         return await getPlayerByVLRId(connection, players[0].vlrid);
     } catch (error) {
         throw error;

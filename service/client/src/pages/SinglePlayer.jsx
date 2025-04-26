@@ -28,6 +28,13 @@ function SinglePlayer() {
     timeLimit: null,
     minWorldsApp: 1,
   });
+
+  const convertflag = (nationalitylogo) => {
+    const up = nationalitylogo.toUpperCase();
+    if (up === "EN") return "GB";
+    else if (up === "UN") return "AQ";
+    else return up;
+  };
   // Initialize game
   useEffect(() => { 
     let isMounted = true;
@@ -59,7 +66,7 @@ function SinglePlayer() {
   const handlePlayerSelect = async (gameid) => {
     if (isGuessing || !curgame.answerPlayer) return;
     setIsGuessing(true);
-    setShouldResetTimer(true);
+    // setShouldResetTimer(true);
 
     try {
       const guessData = await curgame.compareGuess(gameid);
@@ -73,7 +80,7 @@ function SinglePlayer() {
           realname: guessData.realname,
           teamlogo: guessData.teamlogo,
           teamname: guessData.teamname,
-          nationlogo: guessData.nationalitylogo,
+          nationlogo: convertflag(guessData.nationalitylogo),
           worldsapp: guessData.worldsapp + guessData.tip_worldsapp,
           agents: guessData.agents,
           col_team: guessData.col_team,
@@ -95,7 +102,7 @@ function SinglePlayer() {
           realname: guessData.realname,
           teamlogo: guessData.teamlogo,
           teamname: guessData.teamname,
-          nationlogo: guessData.nationalitylogo,
+          nationlogo: convertflag(guessData.nationalitylogo),
           worldsapp: guessData.worldsapp + guessData.tip_worldsapp,
           agents: guessData.agents,
           col_team: guessData.col_team,
@@ -110,7 +117,7 @@ function SinglePlayer() {
       alert('Error occurs, please try again');
     } finally {
       setIsGuessing(false);
-      setShouldResetTimer(false);
+    //   setShouldResetTimer(false);
     }
   };
 

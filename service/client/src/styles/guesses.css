@@ -46,15 +46,16 @@
 }
 
 /* Table column widths */
-.guesses-table th:nth-child(1), .guesses-table td:nth-child(1) { width: 100px; } /* Profile */
+.guesses-table th:nth-child(1), .guesses-table td:nth-child(1) { width: 70px; } /* Profile */
 .guesses-table th:nth-child(2), .guesses-table td:nth-child(2) { 
-  width: 160px;
+  width: 150px;
   text-align: left;
 } /* Name */
-.guesses-table th:nth-child(3), .guesses-table td:nth-child(3) { width: 200px; } /* Team */
-.guesses-table th:nth-child(4), .guesses-table td:nth-child(4) { width: 60px; } /* Nation/Region */
-.guesses-table th:nth-child(5), .guesses-table td:nth-child(5) { width: 80px; } /* Worlds App. */
-.guesses-table th:nth-child(6), .guesses-table td:nth-child(6) { width: 240px; } /* Agents */
+.guesses-table th:nth-child(3), .guesses-table td:nth-child(3) { width: 40px; } /* TeamLogo */
+.guesses-table th:nth-child(4), .guesses-table td:nth-child(4) { width: 140px; } /* Teamname */
+.guesses-table th:nth-child(5), .guesses-table td:nth-child(5) { width: 60px; } /* Nation */
+.guesses-table th:nth-child(6), .guesses-table td:nth-child(6) { width: 60px; } /* Worlds App. */
+.guesses-table th:nth-child(7), .guesses-table td:nth-child(7) { width: 210px; } /* Agents */
 
 /* Character name display */
 .character-name-container {
@@ -117,7 +118,7 @@
   align-items: center;
   justify-content: center;
   margin: 1px auto;
-  padding: 6px 12px;
+  padding: 4px 6px;
   border-radius: 6px;
   transition: all 0.2s;
   /* min-width: 80%; */
@@ -225,7 +226,7 @@
   }
   
   .feedback-cell {
-    padding: 4px 8px;
+    padding: 4px 6px;
     font-size: 13px;
   }
 } 

@@ -1,6 +1,14 @@
 import '../styles/popups.css';
 
 function GameEndPopup({ result, answer, onClose }) {
+
+  const convertflag = (nationalitylogo) => {
+	  const up = nationalitylogo.toUpperCase();
+	  if (up === "EN") return "GB";
+	  else if (up === "UN") return "AQ";
+	  else return up;
+  };
+
   return (
     <div className="popup-overlay">
       <div className="popup-content">
@@ -24,7 +32,7 @@ function GameEndPopup({ result, answer, onClose }) {
                   className="character-link"
                 >
                   <div className="answer-character-name">
-                    <img src={`https://flagsapi.com/${answer.nationalitylogo.toUpperCase()}/flat/64.png`}/> {answer.gameid}
+                    <img src={`https://flagsapi.com/${convertflag(answer.nationalitylogo)}/flat/64.png`}/> {answer.gameid}
                   </div>
                   <div className="answer-character-name-cn">{answer.realname}</div>
                 </a>
