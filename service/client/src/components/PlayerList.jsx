@@ -32,28 +32,28 @@ const PlayerList = ({ players, socket, isGameStarted, handleReadyToggle, onAnony
                   outline: 'none'
                 }}
               >
-                {showNames ? '名' : '无名'}
+                {showNames ? 'USERNAME' : 'ANONYMOUS'}
               </button>
             </th>
-            <th>分</th>
-            <th>猜</th>
+            <th>SCORE</th>
+            <th>GUESS</th>
           </tr>
         </thead>
         <tbody>
           {players.map((player) => (
             <tr key={player.id}>
               <td>
-                {player.disconnected ? '已断开' : player.isHost ? (
-                  '房主'
+                {player.disconnected ? 'disconnected' : player.isHost ? (
+                  'Host'
                 ) : player.id === socket?.id && !isGameStarted ? (
                   <button 
                     onClick={handleReadyToggle}
                     className={`ready-button ${player.ready ? 'ready' : ''}`}
                   >
-                    {player.ready ? '取消准备' : '准备'}
+                    {player.ready ? 'Unready' : 'Ready'}
                   </button>
                 ) : (
-                  player.ready ? '已准备' : '未准备'
+                  player.ready ? 'Ready' : 'Not ready'
                 )}
               </td>
               <td>

@@ -2,8 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/search.css';
 
-// const api_url = 'http://cd01.idc.jihujiasuqi.com:58095/api';
-const api_url = 'http://localhost:5101/api'
+const api_url = `${import.meta.env.API_SERVER_URL}/api`;
 
 function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
   const [searchQuery, setSearchQuery] = useState('');

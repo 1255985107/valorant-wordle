@@ -81,7 +81,7 @@ function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hid
                 <input
                   type="checkbox"
                   checked={gameSettings.minWorldsApp !== null}
-                  onChange={(e) => onSettingsChange('minWorldsApp', e.target.checked ? 1 : null)}
+                  onChange={(e) => onSettingsChange('minWorldsApp', e.target.checked ? 2 : null)}
                 />
                 {gameSettings.minWorldsApp !== null && (
                   <div className="settings-row">

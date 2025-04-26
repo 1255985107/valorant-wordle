@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// const api_url = 'http://cd01.idc.jihujiasuqi.com:58095/api'
-const api_url = 'http://localhost:5101/api'
+const api_url = `${import.meta.env.VITE_API_SERVER_URL}/api`;
 
 class GameState {
   constructor() {
@@ -14,7 +13,7 @@ class GameState {
     // this.answerPlayer = await getRandomPlayer();
     const response = await axios.get(`${api_url}/initialize`, {
       params: {
-        minWorldsApp: minWorldsApp
+        minWorldsApp: minWorldsApp || 1
       }
     });
     this.answerPlayer = response.data;

@@ -5,15 +5,13 @@ import '../styles/Home.css';
 const Home = () => {
   const [roomCount, setRoomCount] = useState(0);
 
-  /*
   useEffect(() => {
-    const serverUrl = import.meta.env.VITE_SERVER_URL;
+    const serverUrl = import.meta.env.VITE_ROOM_SERVER_URL;
     fetch(`${serverUrl}/room-count`)
       .then(response => response.json())
       .then(data => setRoomCount(data.count))
       .catch(error => console.error('Error fetching room count:', error));
   }, []);
-  */
  
   /*
   return (
@@ -44,7 +42,11 @@ const Home = () => {
     <div className="home-container">
       <div className="game-modes">
         <Link to="/singleplayer" className="mode-button">
-          <h2>Single Player</h2>
+          <h2>SinglePlayer</h2>
+        </Link>
+        <Link to="/multiplayer" className="mode-button">
+          <h2>MultiPlayer</h2>
+          <small>Rooms in use: {roomCount}/259</small>
         </Link>
       </div>
       <div className="home-footer">
