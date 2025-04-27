@@ -10,12 +10,14 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 // const secret = "my-secret-key";
 const cors_options = {
-    origin: [
-        process.env.CLIENT_URL,
-        process.env.API_SERVER_URL
-    ],
-      methods: ['GET', 'POST'],
-      credentials: true
+  // origin: [
+  //   process.env.CLIENT_URL,
+  //   process.env.API_SERVER_URL,
+  //   process.env.ROOM_SERVER_URL,
+  // ],
+  origin: '*',
+  methods: ['GET', 'POST'],
+  credentials: true
 }
 
 const io = new Server(server, {
@@ -282,7 +284,7 @@ io.on('connection', (socket) => {
       players: room.players
     });
 
-    console.log(`Player ${player.username} made a guess in room ${roomId}: ${guessResult.name} (${guessResult.isCorrect ? 'correct' : 'incorrect'})`);
+    console.log(`Player ${player.username} made a guess in room ${roomId}: ${guessResult.gameid} (${guessResult.isCorrect ? 'correct' : 'incorrect'})`);
   });
 
   // Handle game end
@@ -480,6 +482,7 @@ io.on('connection', (socket) => {
 });
 
 app.get('/ping', (req, res) => {
+  console.log('Received ping');
   res.status(200).send('Server is active');
 });
 
@@ -494,5 +497,6 @@ app.get('/', (req, res) => {
 });
 
 app.get('/room-count', (req, res) => {
+  console.log(`GET /room-count: ${rooms.size}`);
   res.json({ count: rooms.size });
 });

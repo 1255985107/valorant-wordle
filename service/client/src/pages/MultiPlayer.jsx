@@ -87,9 +87,10 @@ const Multiplayer = () => {
       setGameSettings(settings);
     });
 
-    newSocket.on('gameStart', ({ answerPlayer, settings, players, isPublic }) => {
+    newSocket.on('gameStart', ({ character, settings, players, isPublic }) => {
       gameEndedRef.current = false;
-      const decryptedPlayer = JSON.parse(CryptoJS.AES.decrypt(answerPlayer, secret).toString(CryptoJS.enc.Utf8));
+      const decryptedPlayer = JSON.parse(CryptoJS.AES.decrypt(character, secret).toString(CryptoJS.enc.Utf8));
+      console.log('Decrypted player:', decryptedPlayer);
       curgame.answerPlayer = decryptedPlayer;
       setGameSettings(settings);
       setGuessesLeft(settings.maxAttempts);
@@ -218,7 +219,7 @@ const Multiplayer = () => {
       socket.emit('playerGuess', {
         roomId,
         guessResult: {
-          isCorrect,
+          isCorrect: guessData.is_correct,
           profile_url: guessData.profile_url,
           gameid: gameid,
           realname: guessData.realname,
@@ -313,7 +314,7 @@ const Multiplayer = () => {
         const encryptedPlayer = CryptoJS.AES.encrypt(JSON.stringify(curgame.answerPlayer), secret).toString();
         socket.emit('gameStart', {
           roomId,
-          player: encryptedPlayer,
+          character: encryptedPlayer,
           settings: gameSettings
         });
 
@@ -537,7 +538,7 @@ const Multiplayer = () => {
             />
           )}
 
-          {globalGameEnd && showCharacterPopup && answerCharacter && (
+          {globalGameEnd && showCharacterPopup && curgame.answerPlayer && (
             <GameEndPopup
               result={guesses.some(g => g.isAnswer) ? 'win' : 'lose'}
               answer={curgame.answerPlayer}
