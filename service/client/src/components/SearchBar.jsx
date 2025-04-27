@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/search.css';
 
-const api_url = `${import.meta.env.API_SERVER_URL}/api`;
+const api_url = `${import.meta.env.VITE_API_SERVER_URL}/api`;
 
 function SearchBar({ onCharacterSelect, isGuessing, gameEnd }) {
   const [searchQuery, setSearchQuery] = useState('');
