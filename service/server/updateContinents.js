@@ -18,7 +18,7 @@ const continentMapping = {
   // 亚洲
   'saudi arabia': 'AS', 'iran': 'AS', 'iraq': 'AS', 'syria': 'AS', 'kuwait': 'AS',
   'india': 'AS', 'pakistan': 'AS', 'bangladesh': 'AS', 'afghanistan': 'AS',
-  'myanmar': 'AS', 'bangladesh': 'AS', 'nepal': 'AS', 'kazakhstan': 'AS',
+  'myanmar': 'AS', 'bangladesh': 'AS', 'nepal': 'AS', 'kazakhstan': 'AS', 'turkey': 'AS',
   'thailand': 'AS', 'vietnam': 'AS', 'cambodia': 'AS', 
   'china': 'AS', 'hong kong': 'AS', 'taiwan': 'AS', 
   'south korea': 'AS',  'japan': 'AS',
@@ -32,8 +32,7 @@ const continentMapping = {
   'poland': 'EU', 'lithuania': 'EU', 'latvia': 'EU', 'estonia': 'EU',
   'czech republic': 'EU', 'ukraine': 'EU', 'russia': 'EU',
   'denmark': 'EU', 'norway': 'EU', 'finland': 'EU', 'sweden': 'EU',
-  'bulgaria': 'EU', 'croatia': 'EU',
-  'turkey': 'EU', 'macedonia': 'EU',
+  'bulgaria': 'EU', 'croatia': 'EU', 'macedonia': 'EU',
   // 北美
   'usa': 'NA', 'united states': 'NA', 'canada': 'NA', 'mexico': 'NA',
   // 南美
@@ -52,7 +51,7 @@ async function updateContinents() {
 
     // 获取所有国家记录
     const [countries] = await connection.query(
-      'SELECT nationality FROM nationalities'
+      'SELECT nationality FROM nationalities WHERE continent IS NULL'
     );
 
     // 构建批量更新参数

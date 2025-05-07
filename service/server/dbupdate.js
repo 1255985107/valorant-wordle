@@ -30,7 +30,7 @@ async function upsertNationality(connection, nationality, nationalitylogo) {
 
 // 更新player信息
 async function updatePlayer(connection, playerData) {
-    const query = 'INSERT INTO players (vlrid, gameid, realname, nationality, teamid, profile_url, upd_time) VALUES (?, ?, ?, ?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE gameid = ?, nationality = ?, teamid = ?, profile_url = ?, upd_time = NOW()';
+    const query = 'INSERT INTO players (vlrid, gameid, realname, nationality, teamid, profile_url, upd_time) VALUES (?, ?, ?, ?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE teamid = ?, profile_url = ?, upd_time = NOW()';
     await connection.execute(query, [
         playerData.info.id,
         playerData.info.user,
@@ -38,8 +38,6 @@ async function updatePlayer(connection, playerData) {
         playerData.info.country,
         playerData.team.id,
         playerData.info.img,
-        playerData.info.user,
-        playerData.info.country,
         playerData.team.id,
         playerData.info.img
     ]);
@@ -137,6 +135,8 @@ async function updateFromAPI(connection, vlrid, gameid) {
         await updatePlayerAgents(connection, playerData.info.id, playerData.agents);
         await connection.commit();
 
+        return;
+
         // return {
         //     "vlrid": playerData.info.id,
         //     "gameid": playerData.info.user,
@@ -154,7 +154,7 @@ async function updateFromAPI(connection, vlrid, gameid) {
 
 async function updatebirthFromAPI(connection, gameid) {
     const birthdate = await fetchBirthFromLiquid(gameid);
-	if (birthdate)
+	if (!birthdate)
 		return false;
     const query = `UPDATE players SET birthdate =${birthdate? ('\'' + birthdate + '\''):  null} WHERE gameid ='${gameid}'`;
     await connection.execute(query);

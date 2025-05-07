@@ -1,5 +1,4 @@
 import '../styles/popups.css';
-import { getIndexInfo, searchSubjects } from '../utils/anime';
 import { useState, useEffect, useRef } from 'react';
 
 function SettingsPopup({ gameSettings, onSettingsChange, onClose, onRestart, hideRestart = false }) {

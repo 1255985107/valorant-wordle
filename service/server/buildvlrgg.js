@@ -33,7 +33,7 @@ async function buildVlrgg(connection, file) {
                     await insertVlrgg(connection, player.id, player.name);
                     players_upd.push(player.id);
                 }
-                await insertPart(connection, player.id, event.event_id);
+                // await insertPart(connection, player.id, event.event_id);
             }
             await connection.commit();
             console.log(`Event ${event.event_id} loaded`);
@@ -84,8 +84,8 @@ async function updateAllPlayers(connection, file) {
 async function main() {
     const connection = await pool.getConnection();
     try {
-        // await buildVlrgg(connection, '../config/champions_part.txt.json');
-        await updateAllPlayers(connection, '../config/champions_part.txt.json');
+        await buildVlrgg(connection, '../config/champions_part.txt.json');
+        // await updateAllPlayers(connection, '../config/champions_part.txt.json');
         console.log('players update complete');
     } finally {
         connection.release();
